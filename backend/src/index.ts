@@ -9,14 +9,15 @@ const app = new Hono<{
     JWT_SECRET: string;
   };
 }>();
+// this is a middleware for all the user Routes.
+app.use("api/v1/user/*",async (c,next) =>{
 
 
+})
+
+
+// this is a middleware for all the authentication.
 app.use("api/v1,blog/*",async (c,next) =>{
-  // get the header
-  // verify the header
-  // if the header is valid, continue
-  // if the header is invalid, return an error 403
-
   const header = c.req.header("authorization") || "";
 const token = header.split(" ")[1];
   const response = await verify(token, c.env.JWT_SECRET);
@@ -27,6 +28,8 @@ const token = header.split(" ")[1];
     return c.json({error: "unauthorized"})
   }
 })
+
+// Normal Hono Routes:
 app.post("/api/v1/signup", async (c) => {
   const prisma = new PrismaClient({
     datasourceUrl: c.env.DATABASE_URL,
