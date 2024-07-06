@@ -16,30 +16,6 @@ app.route("/api/v1/blog", blogRouter);
 
 
 
-// this is a middleware for all the authentication.
-app.use("api/v1,blog/*",async (c,next) =>{
-  const header = c.req.header("authorization") || "";
-const token = header.split(" ")[1];
-  const response = await verify(token, c.env.JWT_SECRET);
-  if(response.id){
-    await next();
-  }else{
-    c.status(403)
-    return c.json({error: "unauthorized"})
-  }
-})
-
-
-
-app.post("/api/v1/blog", (c) => {
-  return c.text("Hello Hono!");
-});
-app.put("/api/v1/blog", (c) => {
-  return c.text("Hello Hono!");
-});
-app.get("/api/v1/blog/:id", (c) => {
-  return c.text("Hello Hono!");
-});
 
 export default app;
 
