@@ -10,17 +10,18 @@ export const blogRouter = new Hono<{
 
     },
     Variables:{
-    userId: string;
+    jwtPayload: number;
   };
 }>();
 
 blogRouter.use("/*", async (c, next) => {
     const authHeader= c.req.header("authorization") || "";
-    const token = authHeader.split(" ")[1];
-    const user = await verify(token, c.env.JWT_SECRET);
+    // const token = authHeader.split(" ")[1];
+    const user = await verify(authHeader, c.env.JWT_SECRET);
     if(user){
-        c.set('userId', JSON.stringify(user.id));
-        next();
+        console.log(user.id);
+        c.set('jwtPayload', (user.id));
+        await next();
 
     }else{
         c.status(403);
@@ -32,7 +33,7 @@ blogRouter.use("/*", async (c, next) => {
 
 blogRouter.post("/blogs", async (c) => {
   const body = await c.req.json();
-  const authorId = c.get("userId");
+  const authorId = c.get("jwtPayload");
   const prisma = new PrismaClient({
     datasourceUrl: c.env.DATABASE_URL,
   }).$extends(withAccelerate());
@@ -40,7 +41,7 @@ blogRouter.post("/blogs", async (c) => {
     data: {
       title: body.title,
       content: body.content,
-      authorId: parseInt(authorId),
+      authorId: authorId
     },
   });
   return c.json({
