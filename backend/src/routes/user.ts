@@ -2,6 +2,7 @@ import {Hono} from "hono";
 import { withAccelerate } from "@prisma/extension-accelerate";
 import { sign } from "hono/jwt";
 import { PrismaClient } from "@prisma/client/edge";
+import {signinSchema, signupSchema} from "@tavishbhardwaj/medium-common";
 
 
 
@@ -24,6 +25,11 @@ userRouter.post("/signup", async (c)=>{
         
     }).$extends(withAccelerate());
     const body = await c.req.json();
+    const {success}= signupSchema.safeParse(body);
+    if(!success){
+        c.status(400);
+        return c.json({error: "invalid request"})
+    }
     const user= await prisma.user.create({
         data: {
             name: body.name,
@@ -44,6 +50,11 @@ userRouter.post("/signup", async (c)=>{
         }).$extends(withAccelerate());
 
         const body = await c.req.json();
+        const {success}= signinSchema.safeParse(body);
+        if(!success){
+            c.status(400);
+            return c.json({error: "invalid request"})
+        }
         const user = await prisma.user.findUnique({
 
             where: {
