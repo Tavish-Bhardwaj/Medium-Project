@@ -45,7 +45,7 @@ blogRouter.post("/blogs", async (c) => {
     },
   });
   return c.json({
-    id: blog.authorId
+    id: blog.id
   })
 });
 
@@ -90,11 +90,11 @@ blogRouter.put("/blogs", async (c) => {
       data: {
         title: body.title,
         content: body.content,
-        authorId: 1,
+        authorId: body.id
       },
     });
     return c.json({
-      id: blog.authorId
+      id: blog.id
     })});
 blogRouter.get("/bulk", async (c) => {
     const prisma = new PrismaClient({
