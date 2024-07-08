@@ -19,7 +19,7 @@ blogRouter.use("/*", async (c, next) => {
     // const token = authHeader.split(" ")[1];
     const user = await verify(authHeader, c.env.JWT_SECRET);
     if(user){
-        console.log(user.id);
+        
         c.set('jwtPayload', (user.id));
         await next();
 
@@ -50,8 +50,9 @@ blogRouter.post("/blogs", async (c) => {
 });
 
 
-    blogRouter.get("/blogs", async (c) => {
-        const body= await c.req.json();
+    blogRouter.get("/blogs/:id", async (c) => {
+        const id= await c.req.param("id");
+        
         const prisma =  new PrismaClient({
             
             datasourceUrl: c.env.DATABASE_URL,
@@ -59,7 +60,7 @@ blogRouter.post("/blogs", async (c) => {
         try{
         const blog = await prisma.blog.findFirst({
             where: {
-                id: body.id
+                id: Number(id)
             }
         })
         
@@ -80,6 +81,7 @@ blogRouter.post("/blogs", async (c) => {
 
 blogRouter.put("/blogs", async (c) => {
     const body = await c.req.json();
+    const authorId = c.get("jwtPayload");
     const prisma = new PrismaClient({
       datasourceUrl: c.env.DATABASE_URL,
     }).$extends(withAccelerate());
@@ -90,7 +92,7 @@ blogRouter.put("/blogs", async (c) => {
       data: {
         title: body.title,
         content: body.content,
-        authorId: body.id
+        authorId: authorId
       },
     });
     return c.json({
