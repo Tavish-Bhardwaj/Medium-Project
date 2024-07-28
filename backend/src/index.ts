@@ -3,6 +3,7 @@ import { Hono } from "hono";
 // import { withAccelerate } from "@prisma/extension-accelerate";
 import { decode, sign, verify } from "hono/jwt";
 import {userRouter} from "./routes/user";
+import { cors } from "hono/cors";
 import {blogRouter} from "./routes/blog"
 const app = new Hono<{
   Bindings: {
@@ -11,6 +12,7 @@ const app = new Hono<{
   };
 }>();
 // Middlewares:
+app.use("/*",cors());
 app.route("/api/v1/user", userRouter);
 app.route("/api/v1/blog", blogRouter);
 
