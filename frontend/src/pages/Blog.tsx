@@ -4,7 +4,7 @@ export const Blog =()=>{
     return (
         <>
         <div>
-            Blog
+            Blog..Hehe This is a bloggg
         </div>
         </>
     )
